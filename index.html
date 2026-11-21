@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>FitScan – Calories & Gym</title>
+<style>
+:root{--bg1:#e8eefc;--bg2:#fde8f1;--glass:rgba(255,255,255,.55);--edge:rgba(255,255,255,.8);--tx:#14182b;--mu:#5b6482;--ac:#6d5efc;--ac2:#14c8a8;--bad:#ff5c7a;--in:rgba(255,255,255,.6)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#0b1020;--bg2:#1a1030;--glass:rgba(255,255,255,.08);--edge:rgba(255,255,255,.16);--tx:#f1f3ff;--mu:#9aa3c7;--in:rgba(255,255,255,.08)}}
+:root[data-theme="dark"]{--bg1:#0b1020;--bg2:#1a1030;--glass:rgba(255,255,255,.08);--edge:rgba(255,255,255,.16);--tx:#f1f3ff;--mu:#9aa3c7;--in:rgba(255,255,255,.08)}
+*{box-sizing:border-box;margin:0}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{font:15px/1.4 -apple-system,"SF Pro Text","Segoe UI",Roboto,sans-serif;color:var(--tx);background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;padding:14px 14px 96px;overflow-x:hidden}
+body::before,body::after{content:"";position:fixed;width:300px;height:300px;border-radius:50%;filter:blur(70px);opacity:.55;z-index:-1}
+body::before{background:var(--ac);top:-80px;left:-80px}body::after{background:var(--ac2);bottom:-90px;right:-70px}
+main{max-width:520px;margin:auto}
+h1{font-size:22px;font-weight:800;letter-spacing:-.3px}h2{font-size:15px;margin-bottom:8px}
+.sub{color:var(--mu);font-size:12px}
+.g{background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-radius:22px;padding:16px;margin:12px 0;box-shadow:0 8px 30px rgba(20,20,60,.12)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{justify-content:space-between}
+input,select,button{font:inherit;color:inherit}
+input,select{background:var(--in);border:1px solid var(--edge);border-radius:12px;padding:10px 12px;width:100%;outline:none}
+.f{flex:1;min-width:90px}.f label{display:block;font-size:11px;color:var(--mu);margin:0 0 3px 4px}
+button{border:0;border-radius:14px;padding:11px 16px;cursor:pointer;background:linear-gradient(135deg,var(--ac),#9b5cff);color:#fff;font-weight:700}
+button.s{background:var(--in);color:var(--tx);border:1px solid var(--edge)}
+button:disabled{opacity:.5}
+.chip{padding:8px 12px;border-radius:99px;background:var(--in);border:1px solid var(--edge);font-size:13px;font-weight:600;color:var(--tx)}
+.chip.on{background:linear-gradient(135deg,var(--ac),#9b5cff);color:#fff}
+.sec{display:none}.sec.on{display:block}
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:4px;padding:6px;border-radius:26px;background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+nav button{background:none;color:var(--mu);padding:9px 16px;font-size:13px}nav button.on{background:linear-gradient(135deg,var(--ac),#9b5cff);color:#fff}
+.ring{position:relative;width:150px;height:150px;margin:auto}.ring svg{width:100%;transform:none}
+.ring .t{position:absolute;inset:0;display:grid;place-content:center;text-align:center}.ring b{font-size:28px}
+.tr{fill:none;stroke:var(--in);stroke-width:11}.pr{fill:none;stroke:url(#gr);stroke-width:11;stroke-linecap:round}
+.st{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;text-align:center}.st div{background:var(--in);border-radius:14px;padding:8px}.st b{display:block;font-size:16px}
+.li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--edge)}.li:first-of-type{border-top:0}
+.x{background:none;color:var(--bad);padding:4px 8px}
+.slot{flex:1;min-width:130px;height:130px;border-radius:18px;border:2px dashed var(--edge);background:var(--in) center/cover;display:grid;place-content:center;text-align:center;color:var(--mu);font-size:13px;cursor:pointer}
+.slot input{display:none}
+.big{font-size:34px;font-weight:800}.pos{color:var(--ac2)}.neg{color:var(--bad)}
+.pill{font-size:11px;padding:3px 8px;border-radius:99px;background:var(--in)}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+:root{--ac:#7c5cff;--ac2:#19d3b0;--pk:#ff6fb5;--bg1:#eaeeff;--bg2:#ffeaf5;--fb:"Plus Jakarta Sans",-apple-system,"Segoe UI",Roboto,sans-serif;--fd:"Space Grotesk","Plus Jakarta Sans",-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#070a18;--bg2:#150b2b}}
+:root[data-theme="dark"]{--bg1:#070a18;--bg2:#150b2b}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;-webkit-font-smoothing:antialiased}
+body::before{animation:drift 18s ease-in-out infinite alternate}body::after{animation:drift 22s ease-in-out infinite alternate-reverse}
+html::before{content:"";position:fixed;width:240px;height:240px;border-radius:50%;background:var(--pk);filter:blur(80px);opacity:.35;top:40%;left:55%;z-index:-1;animation:drift 26s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(60px,80px) scale(1.25)}}
+h1{font-family:var(--fd);font-size:27px;letter-spacing:-.5px;background:linear-gradient(90deg,var(--ac),var(--pk),var(--ac2),var(--ac));background-size:300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 8s linear infinite}
+h2,.big,.st b,.ring b,.li b,.pill{font-family:var(--fd)}h2{font-size:16px;letter-spacing:-.2px}.ring b{font-size:38px;letter-spacing:-1px}.sub{font-weight:500}
+.g{isolation:isolate;position:relative;overflow:hidden;border-radius:26px;box-shadow:0 10px 40px rgba(60,40,160,.18),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+.g::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(255,255,255,.22),transparent 45%);pointer-events:none}
+.g:hover{transform:translateY(-2px);box-shadow:0 16px 50px rgba(60,40,160,.26),inset 0 1px 0 rgba(255,255,255,.4)}
+button{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .3s,filter .2s;box-shadow:0 6px 18px rgba(124,92,255,.35)}
+button:hover{transform:translateY(-1px);filter:brightness(1.08)}button:active{transform:scale(.95)}
+button.s,.chip,.x,nav button{box-shadow:none}
+.chip{transition:all .25s cubic-bezier(.2,.8,.2,1)}.chip.on{box-shadow:0 6px 18px rgba(124,92,255,.4);transform:scale(1.05)}
+input,select{transition:border-color .2s,box-shadow .25s}input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 4px rgba(124,92,255,.22)}
+.slot{transition:all .3s cubic-bezier(.2,.8,.2,1)}.slot:hover{border-color:var(--ac);transform:scale(1.025);box-shadow:0 8px 24px rgba(124,92,255,.25)}
+.st div{transition:transform .25s}.st div:hover{transform:translateY(-2px)}
+.pr{filter:drop-shadow(0 0 7px rgba(124,92,255,.65));animation:ring 1.3s cubic-bezier(.2,.8,.2,1) both}@keyframes ring{from{stroke-dasharray:0 327}}
+nav{border-radius:32px;box-shadow:0 14px 40px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.3)}
+nav button{border-radius:24px;transition:all .3s cubic-bezier(.2,.8,.2,1);font-weight:700}nav button.on{box-shadow:0 6px 16px rgba(124,92,255,.45)}
+.sec.enter>*{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}.sec.enter>:nth-child(2){animation-delay:.07s}.sec.enter>:nth-child(3){animation-delay:.14s}.sec.enter>:nth-child(n+4){animation-delay:.21s}
+#res .g{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}}
+button:disabled{background:linear-gradient(90deg,var(--ac),var(--pk),var(--ac2),var(--ac));background-size:300%;animation:sh 1.4s linear infinite;opacity:.9}
+@keyframes sh{to{background-position:300% 0}}
+@media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}}
+</style>
+<style>
+body{background:radial-gradient(70% 50% at 15% 0%,rgba(124,92,255,.4),transparent 60%),radial-gradient(60% 45% at 95% 15%,rgba(255,111,181,.3),transparent 60%),radial-gradient(70% 50% at 50% 105%,rgba(25,211,176,.3),transparent 60%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-attachment:fixed}
+html::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.6'/></svg>")}
+main{max-width:540px}
+#th{width:44px;height:44px;border-radius:50%;padding:0;font-size:18px;background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.g{padding:20px;margin:14px 0;border-radius:30px;backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%)}
+.g::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity .4s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.22),transparent 65%)}.g:hover::after{opacity:1}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:var(--mu);font-weight:800;margin-bottom:12px}
+.ring{width:200px;height:200px}.ring::before{content:"";position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.35),transparent 70%);filter:blur(14px);z-index:-1}
+.ring b{font-size:46px}.tr{stroke-width:9}.pr{stroke-width:9}
+.st{gap:10px;margin-top:16px}.st div{background:linear-gradient(145deg,var(--in),rgba(255,255,255,.03));border:1px solid var(--edge);border-radius:18px;padding:12px 6px}.st b{font-size:19px}
+.mb{margin-top:12px;font-size:13px;font-weight:600}.mb b{font-family:var(--fd);font-size:13px}.mb i{display:block;height:9px;border-radius:9px;background:var(--in);overflow:hidden;margin-top:6px}.mb u{display:block;height:100%;border-radius:9px;animation:grow 1.1s cubic-bezier(.2,.8,.2,1) both}@keyframes grow{from{width:0}}
+.li{border:0!important;background:var(--in);border-radius:18px;padding:12px 14px;margin-bottom:8px;transition:transform .25s,background .25s}.li:hover{transform:translateX(3px)}
+button:not(.s):not(.chip):not(.x):not(#th):not(:disabled){background:linear-gradient(135deg,#7c5cff,#b45cff 55%,#ff6fb5);background-size:140%;box-shadow:0 8px 22px rgba(124,92,255,.4)}
+button:not(.s):not(.chip):not(.x):not(#th):not(:disabled):hover{background-position:100% 0;box-shadow:0 12px 30px rgba(180,92,255,.5)}
+.chip{padding:10px 15px;backdrop-filter:blur(10px)}.chip.on{background:linear-gradient(135deg,#7c5cff,#ff6fb5);box-shadow:0 8px 22px rgba(124,92,255,.45)}
+.slot{height:170px;border-radius:24px;font-weight:600;font-size:14px;border-width:2px}.slot span{font-size:15px;line-height:1.7}
+input,select{border-radius:14px;padding:12px 14px;backdrop-filter:blur(10px)}
+.pill{background:linear-gradient(135deg,rgba(124,92,255,.22),rgba(255,111,181,.22));border:1px solid var(--edge);padding:4px 10px;font-weight:700;color:var(--tx)}
+nav{padding:7px;gap:2px;border-radius:34px}nav button{position:relative;z-index:1;padding:11px 18px;font-size:13px}nav button.on{background:none;box-shadow:none;color:#fff}
+.ind{position:absolute;top:7px;bottom:7px;left:7px;width:80px;border-radius:26px;background:linear-gradient(135deg,var(--ac),var(--pk));box-shadow:0 6px 20px rgba(124,92,255,.55);transition:left .45s cubic-bezier(.3,1.3,.5,1),width .45s;z-index:0}
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;padding:11px 20px;border-radius:99px;background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--edge);font-weight:700;z-index:9;transition:all .45s cubic-bezier(.2,.8,.2,1);pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.25)}.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&display=swap">
+<style>
+:root{--ac:#ffb43c;--ac2:#2ee6b8;--pk:#ff6a5c;--bl:#4c6fff;--grad:linear-gradient(135deg,#ff6a5c,#ffb43c);--fd:"Bricolage Grotesque","Plus Jakarta Sans",-apple-system,sans-serif;--bg1:#fff4e6;--bg2:#e8eeff}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#060a1c;--bg2:#0e1238}}
+:root[data-theme="dark"]{--bg1:#060a1c;--bg2:#0e1238}
+body{background:radial-gradient(60% 45% at 0% 0%,rgba(76,111,255,.45),transparent 60%),radial-gradient(55% 40% at 100% 10%,rgba(255,106,92,.28),transparent 60%),radial-gradient(60% 45% at 60% 110%,rgba(46,230,184,.28),transparent 60%),linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;background-attachment:fixed}
+body::before{background:var(--bl)}body::after{background:var(--ac2)}html::before{background:var(--pk)}
+h1{font-size:30px;font-weight:800;background-image:linear-gradient(90deg,#ffb43c,#ff6a5c,#8aa0ff,#ffb43c)}
+h2{text-transform:none;letter-spacing:-.3px;font-size:19px;color:var(--tx);font-weight:700;font-family:var(--fd);margin-bottom:14px}
+#today>.g:first-child{background:linear-gradient(160deg,rgba(76,111,255,.32),rgba(255,106,92,.14) 70%);border-color:rgba(255,255,255,.25)}
+.ring{width:220px;height:220px}.ring b{font-size:54px}#gr stop:first-child{stop-color:#ffb43c}#gr stop:last-child{stop-color:#ff6a5c}.pr{filter:drop-shadow(0 0 9px rgba(255,150,60,.7))}.ring::before{background:radial-gradient(circle,rgba(255,150,60,.3),transparent 70%)}
+.st div:nth-child(1){background:rgba(255,180,60,.16)}.st div:nth-child(2){background:rgba(76,111,255,.2)}.st div:nth-child(3){background:rgba(46,230,184,.16)}
+.mb:nth-child(1) u{background:linear-gradient(90deg,#4c6fff,#8aa0ff)!important}.mb:nth-child(2) u{background:linear-gradient(90deg,#2ee6b8,#8ff5dc)!important}.mb:nth-child(3) u{background:linear-gradient(90deg,#ff6a5c,#ffb43c)!important}
+.li{border-left:4px solid var(--ac)!important}
+button:not(.s):not(.chip):not(.x):not(#th):not(:disabled){background:var(--grad);color:#2a1200;box-shadow:0 8px 22px rgba(255,120,70,.4)}
+button:not(.s):not(.chip):not(.x):not(#th):not(:disabled):hover{box-shadow:0 12px 30px rgba(255,120,70,.55)}
+nav button,nav button.on{background:none!important;box-shadow:none!important;color:var(--mu)}nav button.on{color:#2a1200}
+.ind{background:var(--grad);box-shadow:0 6px 20px rgba(255,120,70,.5)}
+.chip.on{background:var(--grad);color:#2a1200;box-shadow:0 8px 22px rgba(255,120,70,.4)}
+#modes{display:grid;grid-template-columns:1fr 1fr;gap:8px}#modes .chip{border-radius:18px;padding:15px 10px;text-align:center}
+.slot{border:2px dashed rgba(255,180,60,.65);background-color:rgba(255,180,60,.07);color:var(--tx)}.slot:hover{border-color:var(--ac);box-shadow:0 8px 24px rgba(255,180,60,.25)}
+input:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 4px rgba(255,180,60,.25)}
+.pill{background:rgba(255,180,60,.18)}
+@media (hover:none),(max-width:700px){
+html::before,html::after{display:none}
+body{background-attachment:scroll}
+body::before,body::after{filter:none;animation:none;width:460px;height:460px;opacity:1;background:radial-gradient(circle,rgba(76,111,255,.35),transparent 70%)}
+body::after{background:radial-gradient(circle,rgba(46,230,184,.25),transparent 70%)}
+.g{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 18px rgba(0,0,0,.18);transition:none}
+.g::after{display:none}.g:hover{transform:none}
+.pr,.ring::before{filter:none}.ring::before{display:none}
+input,select,.chip,#th{backdrop-filter:none;-webkit-backdrop-filter:none}
+nav{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.sec.enter>*{animation-duration:.3s}.li:hover,.st div:hover,.slot:hover{transform:none}
+}
+</style></head>
+<body><main>
+<div class="row sp"><div><h1>🥗 FitScan</h1><div class="sub" id="dt"></div></div><button class="s" id="th">◐</button></div>
+
+<section class="sec on" id="today"></section>
+
+<section class="sec" id="scan">
+<div class="g"><h2>What are we scanning?</h2><div class="row" id="modes"></div>
+<div class="row" style="margin-top:12px" id="slots"></div>
+<div class="f" style="margin-top:10px"><label>Food name / note (optional – works alone for a quick lookup, e.g. “msemen with honey”)</label><input id="note" placeholder="tagine, harira, khobz…"></div>
+<button style="width:100%;margin-top:12px" id="go">✨ Analyze</button><div class="sub" id="msg" style="margin-top:8px"></div></div>
+<div id="res"></div></section>
+
+<section class="sec" id="gym"></section>
+<section class="sec" id="me"></section>
+</main>
+<nav id="nav"><button data-t="today" class="on">🏠 Today</button><button data-t="scan">📸 Scan</button><button data-t="gym">🏋️ Gym</button><button data-t="me">🎯 Goals</button></nav>
+<datalist id="ex"><option>Bench Press<option>Squat<option>Deadlift<option>Overhead Press<option>Barbell Row<option>Pull-up<option>Lat Pulldown<option>Incline Dumbbell Press<option>Leg Press<option>Bicep Curl<option>Triceps Pushdown<option>Lateral Raise<option>Romanian Deadlift<option>Hip Thrust</datalist>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const K="fitscan1";
+let S={p:{sex:"m",age:25,h:175,w:75,act:1.55,goal:"lose",gw:70,phys:"Lean & athletic"},food:[],gym:[],wt:[],saved:[]};
+try{const r=localStorage.getItem(K);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const day=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tdee=()=>{const p=S.p;return Math.round((10*p.w+6.25*p.h-5*p.age+(p.sex=="m"?5:-161))*p.act)};
+const target=()=>tdee()+({lose:-500,gain:300,maintain:0}[S.p.goal]);
+$("#dt").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
+$("#th").onclick=()=>{const d=document.documentElement,dark=getComputedStyle(d).getPropertyValue("--tx").trim()=="#f1f3ff";d.dataset.theme=dark?"light":"dark"};
+
+/* ---------- Today ---------- */
+function rToday(){
+ const d=day(),L=S.food.filter(x=>x.d==d),sum=k=>Math.round(L.reduce((a,x)=>a+(+x[k]||0),0)),e=sum("kcal"),T=target(),M=tdee(),C=2*Math.PI*52;
+ const by={};S.food.forEach(x=>{if(x.d<d)by[x.d]=(by[x.d]||0)+x.kcal});
+ const ds=Object.keys(by),net=ds.reduce((a,k)=>a+by[k]-M,0),kg=net/7700;
+ const est=ds.length?`<div class="big ${kg>0?"neg":"pos"}">${kg>0?"+":""}${kg.toFixed(2)} kg</div><div class="sub">Estimated change over ${ds.length} logged day(s) vs. your maintenance (${M} kcal). Based on estimates, so treat it as a trend, not a scale.</div>`:`<div class="sub">Log a full day to see your estimated weight change.</div>`;
+ $("#today").innerHTML=`<div class="g"><div class="ring"><svg viewBox="0 0 120 120"><defs><linearGradient id="gr"><stop offset="0" stop-color="#6d5efc"/><stop offset="1" stop-color="#14c8a8"/></linearGradient></defs><circle class="tr" cx="60" cy="60" r="52"/><circle class="pr" cx="60" cy="60" r="52" stroke-dasharray="${Math.min(e/T,1)*C} ${C}" transform="rotate(-90 60 60)"/></svg><div class="t"><b>${e}</b><span class="sub">of ${T} kcal</span></div></div>
+ <div class="st"><div><b>${Math.max(T-e,0)}</b><span class="sub">left</span></div><div><b>${M}</b><span class="sub">maintenance</span></div><div><b>${e-M>0?"+":""}${e-M}</b><span class="sub">vs maint.</span></div></div>
+ <div style="margin-top:14px">${mb("Protein",sum("protein"),Math.round(S.p.w*1.8),"linear-gradient(90deg,#7c5cff,#b45cff)")}${mb("Carbs",sum("carbs"),Math.round(T*.45/4),"linear-gradient(90deg,#19d3b0,#5ce1ff)")}${mb("Fat",sum("fat"),Math.round(T*.3/9),"linear-gradient(90deg,#ff6fb5,#ffa36f)")}</div></div>
+ <div class="g"><h2>Weight trend</h2>${est}</div>
+ <div class="g"><h2>Today’s food</h2>${L.length?L.map(x=>`<div class="li"><div>${esc(x.name)}<div class="sub">${x.type||""}</div></div><div><b>${x.kcal}</b> kcal <button class="x" style="color:var(--ac)" data-sv="${x.t}">⭐</button><button class="x" data-df="${x.t}">✕</button></div></div>`).join(""):`<div class="sub">Nothing yet. Tap Scan to add a meal.</div>`}
+ <div class="row" style="margin-top:10px"><div class="f"><input id="mn" placeholder="Quick add: name"></div><div style="width:90px"><input id="mk" type="number" placeholder="kcal"></div><button id="ma">+</button></div></div>${S.saved.length?`<div class="g"><h2>⭐ Saved meals</h2><div class="row">${S.saved.map((x,i)=>`<span class="row" style="gap:0"><button class="chip" data-lg="${i}">${esc(x.name.slice(0,24))} · ${x.kcal}</button><button class="x" data-ds="${i}">✕</button></span>`).join("")}</div><div class="sub" style="margin-top:6px">Tap to log again. Star ⭐ any meal above to save it.</div></div>`:""}`;
+}
+document.addEventListener("click",e=>{const t=e.target;
+ if(t.dataset.df){S.food=S.food.filter(x=>x.t!=t.dataset.df);save();rToday()}
+ if(t.dataset.dg){S.gym=S.gym.filter(x=>x.t!=t.dataset.dg);save();rGym()}
+ if(t.id=="ma"){const n=$("#mn").value.trim(),k=+$("#mk").value;if(n&&k>0){S.food.push({t:Date.now(),d:day(),name:n,kcal:Math.round(k),type:"manual"});save();rToday()}}
+});
+
+/* ---------- Scan ---------- */
+const MODES={meal:["🍽️ Meal",1,"All the food visible in the photo is being eaten now. Estimate the full portion."],bread:["🥖 Bread",1,"The photo shows bread that was eaten (e.g. Moroccan khobz, batbout, msemen, harcha, baghrir). Estimate weight from its size and thickness, then calories (khobz ≈ 260-280 kcal/100g)."],plate:["🔄 Plate before/after",2,"Image 1 is the plate BEFORE eating and image 2 is the SAME plate AFTER. Estimate only what was actually eaten (before minus leftovers)."],breadba:["🥖🔄 Bread before/after",2,"Image 1 is the bread BEFORE eating and image 2 is AFTER. Estimate only the bread actually eaten (before minus what is left)."]};
+let mode="meal",F={a:null,b:null},last=null;
+function rModes(){$("#modes").innerHTML=Object.entries(MODES).map(([k,v])=>`<button class="chip ${k==mode?"on":""}" data-m="${k}">${v[0]}</button>`).join("");
+ const two=MODES[mode][1]==2,lab=two?["Before","After"]:["Photo",""];
+ $("#slots").innerHTML=["a"].concat(two?["b"]:[]).map((k,i)=>`<label class="slot" id="s${k}"><input type="file" accept="image/*" data-f="${k}"><span>📷 ${lab[i]}<br>tap to add</span></label>`).join("");
+ ["a","b"].forEach(k=>{if(F[k]&&$("#s"+k)){$("#s"+k).style.backgroundImage=`url(${URL.createObjectURL(F[k])})`;$("#s"+k).querySelector("span").style.display="none"}})}
+$("#modes").onclick=e=>{if(e.target.dataset.m){mode=e.target.dataset.m;rModes()}};
+$("#slots").onchange=e=>{const k=e.target.dataset.f;if(k&&e.target.files[0]){F[k]=e.target.files[0];rModes()}};
+async function shrink(f){const b=await createImageBitmap(f),s=Math.min(1,1024/Math.max(b.width,b.height)),c=document.createElement("canvas");c.width=b.width*s;c.height=b.height*s;c.getContext("2d").drawImage(b,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,"image/jpeg",.82))}
+const msg=t=>$("#msg").textContent=t;
+$("#go").onclick=async()=>{
+ const need=MODES[mode][1],note=$("#note").value.trim();msg("");
+ if(need==2&&!(F.a&&F.b))return msg("Add both the before and after photos.");
+ if(need==1&&!F.a&&!note)return msg("Add a photo or type a food name.");
+ const sample=window.claude?await claude.use("sample"):null;
+ if(!sample&&!S.key)return msg(window.claude?"Photo analysis isn’t enabled for this account or view. Sign in to claude.ai and reload the page, or add a Gemini key in Goals → AI engine.":"Photo analysis only works when the page is opened from claude.ai (the artifact link), not from a home-screen shortcut or saved copy. Or add a free Gemini key in Goals → AI engine.");try{if((F.a||F.b)&&!(await sample.limits()).images)return msg("Photo analysis isn’t available for your account yet. You can still type a food name and analyze it as text.")}catch(x){}
+ $("#go").disabled=true;msg("Analyzing… 🔍");
+ const prompt=`You are a nutrition expert with deep knowledge of Moroccan cuisine (tagine, couscous, harira, bissara, zaalouk, taktouka, tanjia, pastilla, rfissa, seffa, loubia, kefta, mechoui, briouat, sfenj, chebakia, msemen, baghrir, harcha, khobz, mint tea with sugar…) and world foods. MODE: ${MODES[mode][2]} ${need==1&&!F.a?"No photo was given: use only the text description with a typical serving.":""} User note: "${note||"none"}". If a food is unfamiliar, work out its likely ingredients, cooking method, oil and sugar, then give your best estimate and say so in "note". Judge portion size from plate, hand, cutlery and bread size. Reply ONLY with JSON: {"items":[{"name":"","grams":0,"kcal":0,"protein":0,"carbs":0,"fat":0}],"total_kcal":0,"confidence":"low|medium|high","note":"one short sentence"}`;
+ try{const imgs=[];for(const k of ["a","b"].slice(0,need))if(F[k])imgs.push(await shrink(F[k]));
+  const v=!sample?await gem(prompt,imgs):await sample.json(prompt,imgs.length?{images:imgs,cache:false}:{cache:false});
+  last=v;show(v,need==2)}
+ catch(e){msg(e&&e.code=="not_granted"?"Permission is needed to analyze.":e&&e.code=="rate_limited"?"Too many requests, wait a moment.":(e&&e.message?"Error: "+e.message:"Couldn’t analyze that, try again."))}
+ $("#go").disabled=false};
+function show(v,ba){const it=(v.items||[]),tot=Math.round(v.total_kcal||it.reduce((a,x)=>a+(+x.kcal||0),0));msg("");
+ $("#res").innerHTML=`<div class="g"><div class="row sp"><h2>${ba?"You ate":"Estimate"}</h2><span class="pill">${esc(v.confidence||"")} confidence</span></div>
+ ${it.map(x=>`<div class="li"><div>${esc(x.name)}<div class="sub">${Math.round(x.grams||0)}g · P${Math.round(x.protein||0)} C${Math.round(x.carbs||0)} F${Math.round(x.fat||0)}</div></div><b>${Math.round(x.kcal||0)}</b></div>`).join("")}
+ <div class="sub" style="margin:8px 0">${esc(v.note||"")}</div>
+ <div class="row"><div class="f"><label>Total kcal (editable)</label><input id="rk" type="number" value="${tot}"></div><button id="lg" style="align-self:flex-end">Log it</button></div></div>`;
+ $("#lg").onclick=()=>{const g=k=>Math.round(it.reduce((a,x)=>a+(+x[k]||0),0));
+  S.food.push({t:Date.now(),d:day(),name:it.map(x=>x.name).join(", ")||$("#note").value||"Meal",kcal:Math.round(+$("#rk").value||0),protein:g("protein"),carbs:g("carbs"),fat:g("fat"),type:MODES[mode][0]});
+  save();F={a:null,b:null};$("#note").value="";$("#res").innerHTML="";rModes();rToday();tab("today")}}
+
+/* ---------- Gym ---------- */
+function rGym(){
+ const best={};S.gym.forEach(x=>{best[x.ex]=Math.max(best[x.ex]||0,x.kg)});
+ const days={};S.gym.slice().reverse().forEach(x=>(days[x.d]=days[x.d]||[]).push(x));
+ const ks=Object.keys(days).sort().reverse().slice(0,10);
+ $("#gym").innerHTML=`<div class="g"><h2>Log a set</h2><div class="f"><input id="ge" list="ex" placeholder="Exercise"></div>
+ <div class="row" style="margin-top:8px"><div class="f"><label>Weight (kg)</label><input id="gk" type="number" step="0.5"></div><div class="f"><label>Reps</label><input id="gr" type="number"></div><div class="f"><label>Sets</label><input id="gs" type="number" value="3"></div></div>
+ <button style="width:100%;margin-top:10px" id="gadd">Add</button></div>
+ ${ks.map(k=>{const L=days[k],vol=L.reduce((a,x)=>a+x.kg*x.reps*x.sets,0);return`<div class="g"><div class="row sp"><h2>${k==day()?"Today":k}</h2><span class="pill">${Math.round(vol)} kg volume</span></div>${L.map(x=>`<div class="li"><div>${esc(x.ex)} ${x.kg==best[x.ex]?"🏆":""}<div class="sub">${x.kg} kg × ${x.reps} reps × ${x.sets} sets</div></div><button class="x" data-dg="${x.t}">✕</button></div>`).join("")}</div>`}).join("")||`<div class="g sub">No workouts yet. 💪</div>`}`;
+ $("#gadd").onclick=()=>{const ex=$("#ge").value.trim(),kg=+$("#gk").value,reps=+$("#gr").value,sets=+$("#gs").value||1;if(!ex||!reps)return;S.gym.push({t:Date.now(),d:day(),ex,kg,reps,sets});save();rGym()}}
+
+/* ---------- Goals ---------- */
+const PH=["Lean & athletic","Muscular","Slim & toned","Strong & bulky","Shredded","Custom"];
+function rMe(){const p=S.p,lw=S.wt.length?S.wt[S.wt.length-1].w:p.w,diff=(p.w-p.gw).toFixed(1);
+ const fld=(id,l,v,t="number")=>`<div class="f"><label>${l}</label><input id="${id}" type="${t}" step="any" value="${v}"></div>`;
+ $("#me").innerHTML=`<div class="g"><h2>🎯 Goal</h2><div class="row" id="ph">${PH.map(x=>`<button class="chip ${x==p.phys?"on":""}" data-p="${x}">${x}</button>`).join("")}</div>
+ <div class="row" style="margin-top:10px">${fld("pg","Goal weight (kg)",p.gw)}<div class="f"><label>Plan</label><select id="pl">${[["lose","Lose (−500/day)"],["maintain","Maintain"],["gain","Gain (+300/day)"]].map(a=>`<option value="${a[0]}" ${a[0]==p.goal?"selected":""}>${a[1]}</option>`).join("")}</select></div></div>
+ <div class="sub" style="margin-top:8px">${diff>0?diff+" kg to lose":diff<0?Math.abs(diff)+" kg to gain":"You’re at your goal!"} · target ${target()} kcal/day</div></div>
+ <div class="g"><h2>About you</h2><div class="row">${fld("pa","Age",p.age)}${fld("ph2","Height (cm)",p.h)}${fld("pw","Weight (kg)",p.w)}</div>
+ <div class="row" style="margin-top:8px"><div class="f"><label>Sex</label><select id="px"><option value="m" ${p.sex=="m"?"selected":""}>Male</option><option value="f" ${p.sex=="f"?"selected":""}>Female</option></select></div>
+ <div class="f"><label>Activity</label><select id="pc">${[[1.2,"Sedentary"],[1.375,"Light (1-3×/wk)"],[1.55,"Moderate (3-5×/wk)"],[1.725,"Very active"]].map(a=>`<option value="${a[0]}" ${a[0]==p.act?"selected":""}>${a[1]}</option>`).join("")}</select></div></div>
+ <button style="width:100%;margin-top:12px" id="psv">Save</button>
+ <div class="sub" style="margin-top:8px">Maintenance: <b>${tdee()} kcal/day</b> (Mifflin-St Jeor).</div></div>`;
+ $("#ph").onclick=e=>{if(e.target.dataset.p){S.p.phys=e.target.dataset.p;save();rMe()}};
+ $("#psv").onclick=()=>{const v=i=>+$(i).value;const w=v("#pw");if(w!=S.p.w)S.wt.push({d:day(),w});
+  Object.assign(S.p,{gw:v("#pg"),goal:$("#pl").value,age:v("#pa"),h:v("#ph2"),w,sex:$("#px").value,act:+$("#pc").value});save();rMe();rToday()}}
+
+/* ---------- Nav ---------- */
+function tab(t){$$(".sec").forEach(s=>s.classList.toggle("on",s.id==t));$$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==t));if(t=="today")rToday();if(t=="gym")rGym();if(t=="me")rMe()}
+$("#nav").onclick=e=>{if(e.target.dataset.t)tab(e.target.dataset.t)};
+function countUp(){const b=$(".ring b");if(!b)return;const to=+b.textContent,t0=performance.now();(function f(n){const k=Math.min((n-t0)/900,1);b.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})(t0)}
+const _rt=rToday;rToday=function(){_rt();countUp()};
+const _tb=tab;tab=function(t){_tb(t);const s=$("#"+t);s.classList.remove("enter");void s.offsetWidth;s.classList.add("enter");setTimeout(()=>s.classList.remove("enter"),900)};
+document.addEventListener("click",e=>{if(e.target.closest("button")&&navigator.vibrate)try{navigator.vibrate(8)}catch(x){}});
+/* saved meals, weight, rest timer */
+document.addEventListener("click",e=>{const t=e.target;
+ if(t.dataset.sv){const x=S.food.find(y=>y.t==t.dataset.sv);if(x&&!S.saved.some(s=>s.name==x.name)){S.saved.push({name:x.name,kcal:x.kcal,protein:x.protein,carbs:x.carbs,fat:x.fat});save();rToday()}}
+ if(t.dataset.lg!==undefined){const x=S.saved[+t.dataset.lg];if(x){S.food.push(Object.assign({},x,{t:Date.now(),d:day(),type:"⭐ saved"}));save();rToday()}}
+ if(t.dataset.ds!==undefined){S.saved.splice(+t.dataset.ds,1);save();rToday()}
+ if(t.id=="wa"){const w=+$("#wn").value;if(w>20){if(!S.wt.length)S.wt.push({d:"start",w:S.p.w});S.wt=S.wt.filter(x=>x.d!=day());S.wt.push({d:day(),w});S.p.w=w;save();rMe();rToday()}}
+ if(t.dataset.rt!==undefined){+t.dataset.rt>0?rtStart(+t.dataset.rt):(clearInterval(rti),rt=0,rtShow())}
+ if(t.id=="gadd")rtStart(90);
+});
+function wchart(){const p=S.p,a=S.wt.slice(-30),W=300,H=120,vs=a.map(x=>x.w).concat(p.gw),mn=Math.min(...vs)-1,mx=Math.max(...vs)+1,X=i=>a.length>1?i/(a.length-1)*(W-20)+10:W/2,Y=v=>H-10-(v-mn)/(mx-mn)*(H-20);
+ const st=a.length?a[0].w:p.w,pr=st==p.gw?1:Math.max(0,Math.min(1,(st-p.w)/(st-p.gw)));
+ $("#me").insertAdjacentHTML("afterbegin",`<div class="g"><div class="row sp"><h2>⚖️ Weight</h2><span class="pill">${p.w} kg → ${p.gw} kg</span></div><svg viewBox="0 0 ${W} ${H}" style="width:100%;margin:8px 0"><line x1="0" x2="${W}" y1="${Y(p.gw)}" y2="${Y(p.gw)}" stroke="var(--ac2)" stroke-dasharray="4 4"/>${a.length>1?`<polyline points="${a.map((x,i)=>X(i)+","+Y(x.w)).join(" ")}" fill="none" stroke="var(--ac)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`:""}${a.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(x.w)}" r="4" fill="var(--ac)"/>`).join("")}</svg><div style="height:10px;border-radius:9px;background:var(--in);overflow:hidden"><div style="height:100%;width:${pr*100}%;background:linear-gradient(90deg,var(--ac),var(--ac2))"></div></div><div class="sub" style="margin:6px 0 10px">${Math.round(pr*100)}% of the way to your goal (dashed line = goal)</div><div class="row"><div class="f"><input id="wn" type="number" step="0.1" placeholder="Today’s weight (kg)"></div><button id="wa">Log</button></div></div>`)}
+const _rm=rMe;rMe=function(){_rm();wchart()};
+let rt=0,rti;
+function rtShow(){const e=$("#rt");if(e)e.textContent=rt>0?Math.floor(rt/60)+":"+String(rt%60).padStart(2,"0"):"Ready"}
+function rtStart(s){clearInterval(rti);rt=s;rtShow();rti=setInterval(()=>{rt--;rtShow();if(rt<=0){clearInterval(rti);try{navigator.vibrate&&navigator.vibrate([200,100,200]);const c=new(window.AudioContext||webkitAudioContext)(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=880;o.start();o.stop(c.currentTime+.4)}catch(x){}}},1000)}
+const _rg=rGym;rGym=function(){_rg();$("#gym").insertAdjacentHTML("afterbegin",`<div class="g"><div class="row sp"><h2>⏱️ Rest timer</h2><b id="rt" class="big" style="font-size:28px">Ready</b></div><div class="row" style="margin-top:8px">${[60,90,120,180].map(s=>`<button class="chip" data-rt="${s}">${s}s</button>`).join("")}<button class="chip" data-rt="0">Stop</button></div><div class="sub" style="margin-top:6px">Starts automatically (90s) when you add a set.</div></div>`);rtShow()};
+/* GUI v3 */
+function mb(l,v,g,c){return`<div class="mb"><div class="row sp"><span>${l}</span><b>${v} / ${g} g</b></div><i><u style="width:${Math.min(v/g,1)*100}%;background:${c}"></u></i></div>`}
+function posInd(){const b=$("#nav .on"),i=$("#nav .ind");if(b&&i){i.style.left=b.offsetLeft+"px";i.style.width=b.offsetWidth+"px"}}
+$("#nav").insertAdjacentHTML("afterbegin","<i class=ind></i>");
+const _t2=tab;tab=function(t){_t2(t);posInd()};
+window.addEventListener("resize",posInd);window.addEventListener("load",posInd);setTimeout(posInd,400);if(document.fonts)document.fonts.ready.then(posInd);
+document.body.insertAdjacentHTML("beforeend","<div class=toast id=tt></div>");
+let tto;function toast(m){const t=$("#tt");t.textContent=m;t.classList.add("on");clearTimeout(tto);tto=setTimeout(()=>t.classList.remove("on"),1800)}
+document.addEventListener("click",e=>{const t=e.target;if(t.id=="lg")toast("Meal logged ✅");if(t.dataset.lg!==undefined)toast("Logged again ✅");if(t.dataset.sv)toast("Saved ⭐");if(t.id=="wa")toast("Weight logged ⚖️");if(t.id=="gadd")toast("Set added 💪")});
+document.addEventListener("pointermove",e=>{const g=e.target.closest&&e.target.closest(".g");if(g&&e.pointerType=="mouse"){const r=g.getBoundingClientRect();g.style.setProperty("--mx",e.clientX-r.left+"px");g.style.setProperty("--my",e.clientY-r.top+"px")}});
+{const h=new Date().getHours();$("#dt").textContent=(h<5?"Late night":h<12?"Good morning":h<18?"Good afternoon":"Good evening")+" 👋 · "+$("#dt").textContent}
+/* Gemini engine */
+const b64=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result.split(",")[1]);f.readAsDataURL(b)});
+async function gem(prompt,imgs){const parts=[{text:prompt}];for(const i of imgs)parts.push({inlineData:{mimeType:"image/jpeg",data:await b64(i)}});
+ const body=JSON.stringify({contents:[{parts}],generationConfig:{responseMimeType:"application/json"}}),models=["gemini-flash-latest","gemini-flash-lite-latest","gemini-2.5-flash"];let d;
+ for(let n=0;n<6;n++){let r;try{r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[n%3]+":generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":S.key},body})}catch(x){throw new Error("Can’t reach Google from this page. Use the downloaded file version for Gemini.")}
+  d=await r.json();if(!d.error)break;
+  const busy=[404,429,500,503].includes(r.status)||/high demand|overloaded|unavailable|quota/i.test(d.error.message||"");
+  if(!busy||n==5)throw new Error(d.error.message);
+  msg("Gemini is busy, trying again ("+(n+1)+")…");await new Promise(z=>setTimeout(z,n<3?800:2000))}const t=d.candidates&&d.candidates[0]&&d.candidates[0].content.parts.map(p=>p.text||"").join("");if(!t)throw new Error("No answer, try another photo.");return JSON.parse(t.replace(/```json|```/g,"").trim())}
+const _rm3=rMe;rMe=function(){_rm3();$("#me").insertAdjacentHTML("beforeend",`<div class="g"><h2>🤖 AI engine</h2><div class="sub" style="margin-bottom:10px">Photo analysis uses Claude when this page is opened from claude.ai. To use your own free Gemini key instead (works in the downloaded file on any device), paste it here. It stays on this device.</div><div class="row"><div class="f"><input id="gk2" type="password" placeholder="Gemini API key" value="${esc(S.key||"")}"></div><button id="ks">Save</button></div><div class="sub" style="margin-top:8px">Free key: aistudio.google.com → Get API key.</div></div>`)};
+document.addEventListener("click",e=>{if(e.target.id=="ks"){S.key=$("#gk2").value.trim();save();toast("AI key saved 🔑")}});
+rToday();rModes();$("#today").classList.add("enter");
+</script></body></html>
